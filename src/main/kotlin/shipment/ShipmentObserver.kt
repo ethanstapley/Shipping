@@ -1,0 +1,4 @@
+package shipment
+
+interface ShipmentObserver {
+}
