@@ -29,7 +29,24 @@ class TrackingSimulator(
 
     fun findShipment(id: String) = shipments[id]
 
-    fun runSimulation() {
+    fun runSimulation(filepath: String) = runBlocking {
+        val file = java.io.File(filepath)
+        if (!file.exists()) {
+            println("Input file not found with path: $filepath")
+            return@runBlocking
+        }
+
+        file.useLines { lines ->
+            launch {
+                for (line in lines) {
+                    processLine(line)
+                    delay(1000)
+                }
+            }
+        }
+    }
+
+    private fun processLine(line: String) {
 
     }
 }
