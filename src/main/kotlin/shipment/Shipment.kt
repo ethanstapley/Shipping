@@ -1,13 +1,13 @@
 package shipment
 
 class Shipment (
-    status: String,
-    id: String,
+    var status: String,
+    var id: String,
     notes: ArrayList<String>,
     updateHistory: ArrayList<ShippingUpdate>,
-    expectedDeliveryDateTimeStamp: Long,
-    currentLocation: String,
-    private var observers: ArrayList<ShipmentObserver>
+    var expectedDeliveryDateTimeStamp: Long,
+    var currentLocation: String,
+    private var observers: MutableSet<ShipmentObserver>
 ){
     var notes: ArrayList<String> = notes
         private set
@@ -15,5 +15,21 @@ class Shipment (
     var updateHistory: ArrayList<ShippingUpdate> = updateHistory
         private set
 
+    fun addNote(note: String) {
+        notes.add(note)
+        notifyObserver()
+    }
 
+    fun addUpdate(update: ShippingUpdate) {
+        updateHistory.add(update)
+        notifyObserver()
+    }
+
+    fun addObserver(observer: ShipmentObserver) = observers.add(observer)
+
+    fun deleteObserver(observer: ShipmentObserver) = observers.remove(observer)
+
+    private fun notifyObserver() {
+        for (observer in observers) observer.onShipmentUpdated(this)
+    }
 }
