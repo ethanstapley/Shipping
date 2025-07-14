@@ -11,3 +11,13 @@ fun createTestShipment(): Shipment {
         observers = mutableSetOf()
     )
 }
+
+class DummyObserver : ShipmentObserver {
+    var notified = false
+    var testShipment: Shipment? = null
+
+    override fun onShipmentUpdated(shipment: Shipment) {
+        notified = true
+        testShipment = shipment
+    }
+}

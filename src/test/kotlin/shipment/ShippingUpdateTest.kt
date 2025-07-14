@@ -1,4 +1,0 @@
-package shipment
-
-class ShippingUpdateTest {
-}
