@@ -32,7 +32,7 @@ class TrackerViewHelper : ShipmentObserver {
             val formattedTime = formatter.format(Date(it.timestamp))
             "Shipment went from ${it.previousStatus} to ${it.newStatus} at $formattedTime"
         }
-        _expectedShipmentDeliveryDate.value = shipment.expectedDeliveryDateTimeStamp.toString()
+        _expectedShipmentDeliveryDate.value = formatter.format(Date(shipment.expectedDeliveryDateTimeStamp))
         _shipmentStatus.value = shipment.status
     }
 
