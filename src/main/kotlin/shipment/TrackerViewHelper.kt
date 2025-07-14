@@ -2,8 +2,12 @@ package shipment
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.text.SimpleDateFormat
+import java.util.*
 
 class TrackerViewHelper : ShipmentObserver {
+    private val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
     private var currentShipment: Shipment? = null
 
     private val _shipmentId = MutableStateFlow("")
@@ -25,7 +29,8 @@ class TrackerViewHelper : ShipmentObserver {
         _shipmentId.value = shipment.id
         _shipmentNotes.value = shipment.notes.toList()
         _shipmentUpdateHistory.value = shipment.updateHistory.map {
-            "Shipment went from ${it.previousStatus} to ${it.newStatus} at ${it.timestamp}"
+            val formattedTime = formatter.format(Date(it.timestamp))
+            "Shipment went from ${it.previousStatus} to ${it.newStatus} at $formattedTime"
         }
         _expectedShipmentDeliveryDate.value = shipment.expectedDeliveryDateTimeStamp.toString()
         _shipmentStatus.value = shipment.status
