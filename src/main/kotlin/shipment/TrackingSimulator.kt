@@ -12,8 +12,8 @@ import shipment.updateStrategy.ShipmentUpdateStrategy
 import shipment.updateStrategy.ShippedUpdateStrategy
 
 class TrackingSimulator(
-    val shipments: MutableMap<String, Shipment> = mutableMapOf(),
-    val strategyMap: Map<String, ShipmentUpdateStrategy> = mapOf<String, ShipmentUpdateStrategy>(
+    private val shipments: MutableMap<String, Shipment> = mutableMapOf(),
+    private val strategyMap: Map<String, ShipmentUpdateStrategy> = mapOf<String, ShipmentUpdateStrategy>(
         "shipped" to ShippedUpdateStrategy(),
         "location" to LocationUpdateStrategy(),
         "delayed" to DelayedUpdateStrategy(),
