@@ -8,6 +8,5 @@ class DeliveredUpdateStrategy: ShipmentUpdateStrategy {
         val update = ShippingUpdate(shipment.status, "delivered", timestamp)
         shipment.addUpdate(update)
         shipment.status = "delivered"
-        shipment.currentLocation = otherinfo
     }
 }

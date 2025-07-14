@@ -18,7 +18,7 @@ class CanceledUpdateStrategyTest {
     }
 
     @Test
-    fun applyUpdateAddsCorrectShippingUpdateToHistory() {
+    fun applyUpdateHistoryCheck() {
         val shipment = createTestShipment()
         strategy.applyUpdate(shipment, 123L, "")
 
