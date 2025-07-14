@@ -25,6 +25,9 @@ class TrackerViewHelper : ShipmentObserver {
     private val _shipmentStatus = MutableStateFlow("")
     val shipmentStatus: StateFlow<String> = _shipmentStatus
 
+    private val _shipmentLocation = MutableStateFlow("")
+    val shipmentLocation: StateFlow<String> = _shipmentLocation
+
     override fun onShipmentUpdated(shipment: Shipment) {
         _shipmentId.value = shipment.id
         _shipmentNotes.value = shipment.notes.toList()
@@ -32,8 +35,13 @@ class TrackerViewHelper : ShipmentObserver {
             val formattedTime = formatter.format(Date(it.timestamp))
             "Shipment went from ${it.previousStatus} to ${it.newStatus} at $formattedTime"
         }
-        _expectedShipmentDeliveryDate.value = formatter.format(Date(shipment.expectedDeliveryDateTimeStamp))
+        _expectedShipmentDeliveryDate.value = if (shipment.expectedDeliveryDateTimeStamp >0L) {
+            formatter.format(Date(shipment.expectedDeliveryDateTimeStamp))
+        } else {
+            "unknown"
+        }
         _shipmentStatus.value = shipment.status
+        _shipmentLocation.value = shipment.currentLocation
     }
 
     fun trackShipment(shipment: Shipment) {

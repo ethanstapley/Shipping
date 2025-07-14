@@ -10,7 +10,7 @@ class TrackerViewHelperTest {
     @Test
     fun onShipmentUpdatedAttributesVerification() = runTest {
         val shipment = createTestShipment()
-        ShippedUpdateStrategy().applyUpdate(shipment, 123L, "888888")
+        ShippedUpdateStrategy().applyUpdate(shipment, 123L, "1652713940874")
         shipment.addNote("Fragile")
 
         val helper = TrackerViewHelper()
@@ -19,7 +19,7 @@ class TrackerViewHelperTest {
         assertEquals("abc", helper.shipmentId.first())
         assertEquals("shipped", helper.shipmentStatus.first())
         assertEquals(listOf("Fragile"), helper.shipmentNotes.first())
-        assertEquals("1969-12-31 17:14:48", helper.expectedShipmentDeliveryDate.first())
+        assertEquals("2022-05-16 09:12:20", helper.expectedShipmentDeliveryDate.first())
         assertTrue(helper.shipmentUpdateHistory.first().first().contains("Shipment went from created to shipped"))
     }
 

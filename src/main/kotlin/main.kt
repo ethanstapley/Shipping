@@ -63,6 +63,7 @@ fun main() = application {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("ID: ${helper.shipmentId.collectAsState().value}")
                             Text("Status: ${helper.shipmentStatus.collectAsState().value}")
+                            Text("Current Location: ${helper.shipmentLocation.collectAsState().value}")
                             Text("Delivery ETA: ${helper.expectedShipmentDeliveryDate.collectAsState().value}")
                             Text("Notes:")
 
