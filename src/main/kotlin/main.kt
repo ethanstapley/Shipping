@@ -58,9 +58,7 @@ fun main() = application {
                 for (helper in trackedHelpers) {
                     Card(
                         elevation = 4.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("ID: ${helper.shipmentId.collectAsState().value}")
