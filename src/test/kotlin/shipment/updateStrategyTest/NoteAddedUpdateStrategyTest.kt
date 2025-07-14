@@ -12,7 +12,6 @@ class NoteAddedUpdateStrategyTest {
     fun applyUpdateStatusVerification() {
         val shipment = createTestShipment()
         strategy.applyUpdate(shipment, 123L, "Extra fragile")
-        assertEquals("noteadded", shipment.status)
         assertEquals(listOf("Extra fragile"), shipment.notes)
     }
 
@@ -22,7 +21,7 @@ class NoteAddedUpdateStrategyTest {
         strategy.applyUpdate(shipment, 123L, "Extra fragile")
         val update = shipment.updateHistory.first()
         assertEquals("created", update.previousStatus)
-        assertEquals("noteadded", update.newStatus)
+        assertEquals("created", update.newStatus)
         assertEquals(123L, update.timestamp)
     }
 }

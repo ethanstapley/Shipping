@@ -19,7 +19,7 @@ class TrackingSimulatorTest {
     @Test
     fun findShipmentReturnNull() {
         val simulator = TrackingSimulator()
-        assertNull(simulator.findShipment("nonexistent"))
+        assertNull(simulator.findShipment("not real id"))
     }
 
     @Test
@@ -54,6 +54,8 @@ class TrackingSimulatorTest {
             created,abc,123
             badline
             unknown,abc,456,info
+            test,test,test,test,test,test
+            test,test,test,test,test
         """.trimIndent()
 
         val tempFile = File.createTempFile("invalid_test_sim", ".txt")
@@ -64,6 +66,52 @@ class TrackingSimulatorTest {
         val shipment = simulator.findShipment("abc")
         assertNotNull(shipment)
         assertEquals("created", shipment!!.status)
+
+        tempFile.deleteOnExit()
+    }
+
+    @Test
+    fun filePathDoesNotExistShouldNotThrow() = runTest {
+        val simulator = TrackingSimulator()
+        simulator.runSimulation("/fake/path")
+        // used to get test with coverage. making sure it doesn't crash
+    }
+
+    @Test
+    fun testDuplicateCreateIds() = runTest {
+        val simulator = TrackingSimulator()
+
+        val input = """
+        created,abc,123
+        created,abc,123
+    """.trimIndent()
+
+        val tempFile = File.createTempFile("test_sim", ".txt")
+        tempFile.writeText(input)
+
+        simulator.runSimulation(tempFile.absolutePath)
+
+        val shipment = simulator.findShipment("abc")!!
+        assertEquals("created", shipment.status)
+
+        tempFile.deleteOnExit()
+    }
+
+    @Test
+    fun testNullShipmentUpdateFinder() = runTest {
+        val simulator = TrackingSimulator()
+
+        val input = """
+        shipped,def,456,888888
+    """.trimIndent()
+
+        val tempFile = File.createTempFile("test_sim", ".txt")
+        tempFile.writeText(input)
+
+        simulator.runSimulation(tempFile.absolutePath)
+
+        val shipment = simulator.findShipment("def")
+        assertNull(shipment)
 
         tempFile.deleteOnExit()
     }
