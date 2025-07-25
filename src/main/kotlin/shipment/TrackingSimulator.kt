@@ -73,8 +73,8 @@ class TrackingSimulator(
                     notes = arrayListOf(),
                     updateHistory = arrayListOf(),
                     expectedDeliveryDateTimeStamp = 0L,
-                    currentLocation = "",
-                    observers = mutableSetOf())
+                    currentLocation = ""
+                )
                 addShipment(shipment)
             }
             return

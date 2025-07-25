@@ -7,8 +7,9 @@ class Shipment (
     updateHistory: ArrayList<ShippingUpdate>,
     var expectedDeliveryDateTimeStamp: Long,
     var currentLocation: String,
-    private var observers: MutableSet<ShipmentObserver>
 ){
+    private var observers: MutableSet<ShipmentObserver> = mutableSetOf()
+
     var notes: ArrayList<String> = notes
         private set
 
