@@ -7,11 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import shipment.TrackingSimulator
+import shipment.TrackingServer
 import shipment.TrackerViewHelper
 
 fun main() = application {
-    val simulator = TrackingSimulator()
+    val simulator = TrackingServer()
     val trackedHelpers = remember { mutableStateListOf<TrackerViewHelper>() }
     var userInput by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf("") }

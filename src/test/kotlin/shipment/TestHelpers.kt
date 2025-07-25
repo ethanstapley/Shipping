@@ -7,8 +7,7 @@ fun createTestShipment(): Shipment {
         notes = arrayListOf(),
         updateHistory = arrayListOf(),
         expectedDeliveryDateTimeStamp = 0L,
-        currentLocation = "",
-        observers = mutableSetOf()
+        currentLocation = ""
     )
 }
 

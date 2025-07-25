@@ -11,7 +11,7 @@ import shipment.updateStrategy.NoteAddedUpdateStrategy
 import shipment.updateStrategy.ShipmentUpdateStrategy
 import shipment.updateStrategy.ShippedUpdateStrategy
 
-class TrackingSimulator(
+class TrackingServer(
     private val shipments: MutableMap<String, Shipment> = mutableMapOf(),
     private val strategyMap: Map<String, ShipmentUpdateStrategy> = mapOf<String, ShipmentUpdateStrategy>(
         "shipped" to ShippedUpdateStrategy(),
@@ -23,32 +23,9 @@ class TrackingSimulator(
         "delivered" to DeliveredUpdateStrategy()
     )
 ) {
-    fun addShipment(shipment: Shipment) {
-        shipments.put(shipment.id, shipment)
-    }
+    fun addShipment(shipment: Shipment) = shipments.put(shipment.id, shipment)
 
     fun findShipment(id: String) = shipments[id]
-
-    suspend fun runSimulation(filepath: String)  {
-        withContext(Dispatchers.IO) {
-            val file = java.io.File(filepath)
-            if (!file.exists()) {
-                println("Input file not found with path: $filepath")
-                return@withContext
-            }
-
-            val lines = file.readLines()
-
-            launch {
-                for (line in lines) {
-                    processLine(line)
-                    println(line)
-                    delay(1000)
-                }
-            }
-        }
-
-    }
 
     private fun processLine(line: String) {
         val sections = line.split(",")

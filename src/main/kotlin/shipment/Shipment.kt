@@ -1,6 +1,6 @@
 package shipment
 
-class Shipment (
+abstract class Shipment (
     var status: String,
     var id: String,
     notes: ArrayList<String>,
@@ -32,5 +32,9 @@ class Shipment (
 
     private fun notifyObserver() {
         for (observer in observers) observer.onShipmentUpdated(this)
+    }
+
+    open fun validateExpectedDeliveryDate() {
+
     }
 }

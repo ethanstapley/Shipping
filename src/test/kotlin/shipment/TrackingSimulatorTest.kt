@@ -8,7 +8,7 @@ class TrackingSimulatorTest {
 
     @Test
     fun addShipmentStoreShipmentInMap() {
-        val simulator = TrackingSimulator()
+        val simulator = TrackingServer()
         val shipment = createTestShipment()
 
         simulator.addShipment(shipment)
@@ -18,13 +18,13 @@ class TrackingSimulatorTest {
 
     @Test
     fun findShipmentReturnNull() {
-        val simulator = TrackingSimulator()
+        val simulator = TrackingServer()
         assertNull(simulator.findShipment("not real id"))
     }
 
     @Test
     fun testCreateAndUpdateCorrectly() = runTest {
-        val simulator = TrackingSimulator()
+        val simulator = TrackingServer()
 
         val input = """
         created,abc,123
@@ -48,7 +48,7 @@ class TrackingSimulatorTest {
 
     @Test
     fun ignoreInvalidLines() = runTest {
-        val simulator = TrackingSimulator()
+        val simulator = TrackingServer()
 
         val input = """
             created,abc,123
@@ -72,14 +72,14 @@ class TrackingSimulatorTest {
 
     @Test
     fun filePathDoesNotExistShouldNotThrow() = runTest {
-        val simulator = TrackingSimulator()
+        val simulator = TrackingServer()
         simulator.runSimulation("/fake/path")
         // used to get test with coverage. making sure it doesn't crash
     }
 
     @Test
     fun testDuplicateCreateIds() = runTest {
-        val simulator = TrackingSimulator()
+        val simulator = TrackingServer()
 
         val input = """
         created,abc,123
@@ -99,7 +99,7 @@ class TrackingSimulatorTest {
 
     @Test
     fun testNullShipmentUpdateFinder() = runTest {
-        val simulator = TrackingSimulator()
+        val simulator = TrackingServer()
 
         val input = """
         shipped,def,456,888888
