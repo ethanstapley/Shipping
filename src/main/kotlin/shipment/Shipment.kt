@@ -7,6 +7,7 @@ abstract class Shipment (
     updateHistory: ArrayList<ShippingUpdate>,
     var expectedDeliveryDateTimeStamp: Long,
     var currentLocation: String,
+    var createdTime: Long
 ){
     private var observers: MutableSet<ShipmentObserver> = mutableSetOf()
 

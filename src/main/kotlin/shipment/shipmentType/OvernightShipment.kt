@@ -9,8 +9,9 @@ class OvernightShipment (
     notes: ArrayList<String>,
     updateHistory: ArrayList<ShippingUpdate>,
     expectedDeliveryDateTimeStamp: Long,
-    currentLocation: String
-) : Shipment(status, id, notes, updateHistory, expectedDeliveryDateTimeStamp, currentLocation) {
+    currentLocation: String,
+    createdTime: Long
+) : Shipment(status, id, notes, updateHistory, expectedDeliveryDateTimeStamp, currentLocation, createdTime) {
 
     override fun validateExpectedDeliveryDate() {
 

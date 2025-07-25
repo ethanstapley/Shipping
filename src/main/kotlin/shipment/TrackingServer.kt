@@ -23,6 +23,8 @@ class TrackingServer(
         "delivered" to DeliveredUpdateStrategy()
     )
 ) {
+    private val shipmentFactory = ShipmentFactory
+
     fun addShipment(shipment: Shipment) = shipments.put(shipment.id, shipment)
 
     fun findShipment(id: String) = shipments[id]
@@ -44,14 +46,7 @@ class TrackingServer(
                 println("Shipment with ID: '$shipmentId' already exists")
                 return
             } else {
-                val shipment = Shipment(
-                    status = "created",
-                    id = shipmentId,
-                    notes = arrayListOf(),
-                    updateHistory = arrayListOf(),
-                    expectedDeliveryDateTimeStamp = 0L,
-                    currentLocation = ""
-                )
+                val shipment = shipmentFactory.createShipment(otherInfo, shipmentId, timestampOfUpdate)
                 addShipment(shipment)
             }
             return
