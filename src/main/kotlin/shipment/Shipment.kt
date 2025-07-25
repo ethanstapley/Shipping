@@ -35,7 +35,5 @@ abstract class Shipment (
         for (observer in observers) observer.onShipmentUpdated(this)
     }
 
-    open fun validateExpectedDeliveryDate() {
-
-    }
+    open fun validateExpectedDeliveryDate() {}
 }

@@ -12,5 +12,4 @@ class StandardShipment(
     currentLocation: String,
     createdTime: Long
 ) : Shipment(status, id, notes, updateHistory, expectedDeliveryDateTimeStamp, currentLocation, createdTime) {
-
 }

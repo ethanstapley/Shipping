@@ -14,7 +14,10 @@ class BulkShipment (
 ) : Shipment(status, id, notes, updateHistory, expectedDeliveryDateTimeStamp, currentLocation, createdTime) {
 
     override fun validateExpectedDeliveryDate() {
-
+        val threeDays = 259200000L
+        if (expectedDeliveryDateTimeStamp < createdTime + threeDays) {
+            addNote("A bulk shipment expected sooner than the required 72 hours waiting time")
+        }
     }
 
 }

@@ -14,6 +14,9 @@ class OvernightShipment (
 ) : Shipment(status, id, notes, updateHistory, expectedDeliveryDateTimeStamp, currentLocation, createdTime) {
 
     override fun validateExpectedDeliveryDate() {
-
+        val oneDay = 86400000
+        if (expectedDeliveryDateTimeStamp > createdTime + oneDay && status != "delayed") {
+            addNote("An overnight shipment was updated to include a delivery date later than 24 hours after it was created.")
+        }
     }
 }

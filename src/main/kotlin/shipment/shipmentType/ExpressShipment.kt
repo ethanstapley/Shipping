@@ -14,6 +14,9 @@ class ExpressShipment (
 ) : Shipment(status, id, notes, updateHistory, expectedDeliveryDateTimeStamp, currentLocation, createdTime) {
 
     override fun validateExpectedDeliveryDate() {
-
+        val threeDays = 259200000L
+        if (expectedDeliveryDateTimeStamp > createdTime + threeDays && status != "delayed") {
+            addNote("An express shipment was updated to include a delivery date later than 72 hours after it was created")
+        }
     }
 }
