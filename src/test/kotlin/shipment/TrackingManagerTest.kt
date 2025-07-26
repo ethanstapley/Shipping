@@ -77,4 +77,28 @@ class TrackingManagerTest {
         val simulator = TrackingManager()
         assertNull(simulator.findShipment("not real id"))
     }
+
+    @Test
+    fun createBulkShipment() {
+        val s = ShipmentFactory.createShipment("bulk", "S1", 0L)
+        assertNotNull(s)
+    }
+
+    @Test
+    fun createExpressShipment() {
+        val s = ShipmentFactory.createShipment("express", "S1", 0L)
+        assertNotNull(s)
+    }
+
+    @Test
+    fun createOvernightShipment() {
+        val s = ShipmentFactory.createShipment("overnight", "S1", 0L)
+        assertNotNull(s)
+    }
+
+    @Test
+    fun createFakeShipment() {
+        assertFails { ShipmentFactory.createShipment("notvalidorreal", "S1", 0L)
+        }
+    }
 }
