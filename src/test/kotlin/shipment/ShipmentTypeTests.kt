@@ -1,10 +1,10 @@
 package shipment.shipmentType
 
+import kotlin.test.assertEquals
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class ShipmentTypeTests {
-
     @Test
     fun BulkDateUnder() {
         val created = 1_000_000L
