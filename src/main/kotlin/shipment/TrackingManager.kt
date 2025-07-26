@@ -1,7 +1,5 @@
 package shipment
 
-import kotlinx.coroutines.*
-
 import shipment.updateStrategy.CanceledUpdateStrategy
 import shipment.updateStrategy.DelayedUpdateStrategy
 import shipment.updateStrategy.DeliveredUpdateStrategy
@@ -11,7 +9,7 @@ import shipment.updateStrategy.NoteAddedUpdateStrategy
 import shipment.updateStrategy.ShipmentUpdateStrategy
 import shipment.updateStrategy.ShippedUpdateStrategy
 
-class TrackingServer(
+class TrackingManager(
     private val shipments: MutableMap<String, Shipment> = mutableMapOf(),
     private val strategyMap: Map<String, ShipmentUpdateStrategy> = mapOf<String, ShipmentUpdateStrategy>(
         "shipped" to ShippedUpdateStrategy(),
@@ -29,7 +27,7 @@ class TrackingServer(
 
     fun findShipment(id: String) = shipments[id]
 
-    private fun processLine(line: String) {
+    fun processLine(line: String) {
         val sections = line.split(",")
         if (sections.size < 3 || sections.size > 4) {
             println("Invalid line: $line")
@@ -49,6 +47,7 @@ class TrackingServer(
                 val shipment = shipmentFactory.createShipment(otherInfo, shipmentId, timestampOfUpdate)
                 addShipment(shipment)
             }
+            println("CREATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return
         }
 

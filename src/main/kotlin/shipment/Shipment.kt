@@ -1,21 +1,17 @@
 package shipment
+import kotlinx.serialization.Serializable
 
+@Serializable
 abstract class Shipment (
-    var status: String,
-    var id: String,
-    notes: ArrayList<String>,
-    updateHistory: ArrayList<ShippingUpdate>,
-    var expectedDeliveryDateTimeStamp: Long,
-    var currentLocation: String,
-    var createdTime: Long
+    open var status: String,
+    open var id: String,
+    open val notes: ArrayList<String>,
+    open val updateHistory: ArrayList<ShippingUpdate>,
+    open var expectedDeliveryDateTimeStamp: Long,
+    open var currentLocation: String,
+    open var createdTime: Long
 ){
     private var observers: MutableSet<ShipmentObserver> = mutableSetOf()
-
-    var notes: ArrayList<String> = notes
-        private set
-
-    var updateHistory: ArrayList<ShippingUpdate> = updateHistory
-        private set
 
     fun addNote(note: String) {
         notes.add(note)

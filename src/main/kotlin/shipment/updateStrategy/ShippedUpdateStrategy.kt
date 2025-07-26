@@ -8,6 +8,7 @@ class ShippedUpdateStrategy: ShipmentUpdateStrategy {
         val update = ShippingUpdate(shipment.status, "shipped", timestamp)
         shipment.status = "shipped"
         shipment.expectedDeliveryDateTimeStamp = otherinfo.trim().toLong()
+        shipment.validateExpectedDeliveryDate()
         shipment.addUpdate(update)
     }
 }
