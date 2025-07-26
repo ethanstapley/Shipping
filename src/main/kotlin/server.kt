@@ -20,6 +20,25 @@ import shipment.Shipment
 import shipment.TrackingManager
 import kotlin.text.isNullOrBlank
 import kotlin.text.trim
+import shipment.shipmentType.*
+
+
+private fun Shipment.toDto(): ShipmentDto = ShipmentDto(
+    type = when (this) {
+        is StandardShipment  -> "standard"
+        is OvernightShipment -> "overnight"
+        is ExpressShipment   -> "express"
+        is BulkShipment      -> "bulk"
+        else -> "standard"
+    },
+    id = id,
+    status = status,
+    notes = notes,
+    updateHistory = updateHistory,
+    expectedDeliveryDateTimeStamp = expectedDeliveryDateTimeStamp,
+    currentLocation = currentLocation,
+    createdTime = createdTime
+)
 
 fun startServer() {
     embeddedServer(Netty, port = 8080) {
@@ -79,18 +98,12 @@ fun startServer() {
 
             get("/shipment/{id}") {
                 val id = call.parameters["id"]
-                if (id.isNullOrBlank()) {
-                    call.respond(HttpStatusCode.BadRequest, "Missing ID")
-                    return@get
-                }
-
-                val shipment: Shipment? = manager.findShipment(id)
-                if (shipment == null) {
-                    call.respond(HttpStatusCode.NotFound, "Shipment not found")
-                } else {
-                    call.respond(shipment)
-                }
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing ID")
+                val s = manager.findShipment(id)
+                    ?: return@get call.respond(HttpStatusCode.NotFound, "Shipment not found")
+                call.respond(s.toDto())
             }
+
         }
     }.start(wait = true)
 }

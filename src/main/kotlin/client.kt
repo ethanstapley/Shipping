@@ -1,24 +1,8 @@
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -29,35 +13,40 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import shipment.Shipment
 import shipment.TrackerViewHelper
+import shipment.shipmentType.BulkShipment
+import shipment.shipmentType.ExpressShipment
+import shipment.shipmentType.OvernightShipment
+import shipment.shipmentType.StandardShipment
 
 val httpClient = HttpClient(CIO) {
     install(ContentNegotiation) {
-        json(Json {
-            ignoreUnknownKeys = true
-        })
+        json(Json { ignoreUnknownKeys = true })
     }
 }
 
-fun startClient() = application {
+private fun ShipmentDto.toDomain(): Shipment =
+    when (type) {
+        "standard"  -> StandardShipment(status, id, ArrayList(notes), ArrayList(updateHistory), expectedDeliveryDateTimeStamp, currentLocation, createdTime)
+        "overnight" -> OvernightShipment(status, id, ArrayList(notes), ArrayList(updateHistory), expectedDeliveryDateTimeStamp, currentLocation, createdTime)
+        "express"   -> ExpressShipment(status, id, ArrayList(notes), ArrayList(updateHistory), expectedDeliveryDateTimeStamp, currentLocation, createdTime)
+        "bulk"      -> BulkShipment(status, id, ArrayList(notes), ArrayList(updateHistory), expectedDeliveryDateTimeStamp, currentLocation, createdTime)
+        else        -> throw IllegalArgumentException("Invalid Shipment Type: $type")
+    }
 
+suspend fun fetchShipmentFromServer(id: String): Shipment? = try {
+    httpClient.get("http://localhost:8080/shipment/$id").body<ShipmentDto>().toDomain()
+} catch (_: Exception) { null }
+
+fun startClient() = application {
+    val scope = rememberCoroutineScope()
     val trackedHelpers = remember { mutableStateListOf<TrackerViewHelper>() }
+    val pollJobs = remember { mutableMapOf<TrackerViewHelper, Job>() }
     var userInput by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf("") }
-
-    suspend fun fetchShipmentFromServer(id: String): Shipment? {
-        return try {
-            httpClient.get("http://localhost:8080/shipment/$id").body()
-        } catch (e: Exception) {
-            null
-        }
-    }
 
     Window(onCloseRequest = ::exitApplication, title = "Shipping Tracker") {
         MaterialTheme {
@@ -71,18 +60,29 @@ fun startClient() = application {
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(8.dp))
-                    val scope = rememberCoroutineScope()
                     Button(onClick = {
                         scope.launch {
-                            val shipment = withContext(Dispatchers.IO) { fetchShipmentFromServer(userInput.trim()) }
-                            if (shipment == null) {
-                                errorText = "Shipment ID '$userInput' not found"
+                            val id = userInput.trim()
+                            val first = fetchShipmentFromServer(id)
+                            if (first == null) {
+                                errorText = "Shipment ID '$id' not found"
                             } else {
                                 val helper = TrackerViewHelper()
-                                helper.trackShipment(shipment)
+                                helper.trackShipment(first)
                                 trackedHelpers.add(helper)
                                 errorText = ""
                                 userInput = ""
+                                val job = scope.launch {
+                                    while (isActive && trackedHelpers.contains(helper)) {
+                                        try {
+                                            val dto: ShipmentDto = httpClient.get("http://localhost:8080/shipment/$id").body()
+                                            val updated = dto.toDomain()
+                                            helper.trackShipment(updated)
+                                        } catch (_: Exception) { }
+                                        delay(500)
+                                    }
+                                }
+                                pollJobs[helper] = job
                             }
                         }
                     }) { Text("Track") }
@@ -96,33 +96,24 @@ fun startClient() = application {
                 Spacer(Modifier.height(16.dp))
 
                 for (helper in trackedHelpers) {
-                    Card(
-                        elevation = 4.dp,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-                    ) {
+                    Card(elevation = 4.dp, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("ID: ${helper.shipmentId.collectAsState().value}")
                             Text("Status: ${helper.shipmentStatus.collectAsState().value}")
                             Text("Current Location: ${helper.shipmentLocation.collectAsState().value}")
                             Text("Delivery ETA: ${helper.expectedShipmentDeliveryDate.collectAsState().value}")
                             Text("Notes:")
-
-                            helper.shipmentNotes.collectAsState().value.forEach {
-                                Text("- $it")
-                            }
+                            helper.shipmentNotes.collectAsState().value.forEach { Text("- $it") }
 
                             Text("Update History:")
-                            helper.shipmentUpdateHistory.collectAsState().value.forEach {
-                                Text("- $it")
-                            }
+                            helper.shipmentUpdateHistory.collectAsState().value.forEach { Text("- $it") }
 
                             Spacer(Modifier.height(8.dp))
                             Button(onClick = {
                                 helper.stopTracking()
                                 trackedHelpers.remove(helper)
-                            }) {
-                                Text("Stop Tracking")
-                            }
+                                pollJobs.remove(helper)?.cancel()
+                            }) { Text("Stop Tracking") }
                         }
                     }
                 }

@@ -47,7 +47,6 @@ class TrackingManager(
                 val shipment = shipmentFactory.createShipment(otherInfo, shipmentId, timestampOfUpdate)
                 addShipment(shipment)
             }
-            println("CREATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return
         }
 
