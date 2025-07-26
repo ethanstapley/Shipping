@@ -72,6 +72,7 @@ fun startClient() = application {
                                 trackedHelpers.add(helper)
                                 errorText = ""
                                 userInput = ""
+                                // NOTE: Observer pattern wasn't fully realized here, as the setup would need WebSockets, so I used polling instead. Which defeats the point of the observer Pattern
                                 val job = scope.launch {
                                     while (isActive && trackedHelpers.contains(helper)) {
                                         try {
